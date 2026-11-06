@@ -2,7 +2,7 @@
 
 This page lets your password manager autofill your 2FA code.
 
-Open https://2fa.autofill.help and let the password manager fill the "2FA code" field. The code moves into the address (`2fa.autofill.help/<code>`) and the title becomes "Your code is <code>". An AI agent can then read the code and type it where your password manager can't fill it, such as a Duo passcode box.
+Open https://2fa.autofill.help and let the password manager fill the "2FA code" field. The code moves into the address (`2fa.autofill.help/<code>`) and the title becomes `Your code is <code>`. An AI agent can then read the code and type it where your password manager can't fill it, such as a Duo passcode box.
 
 # Examples
 
