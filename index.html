@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-rlklKJDmOlZ5SwXBeSWRJm4CKv+JLFKjsKc3QhYzQLA='; form-action 'none'; base-uri 'none'">
+<title>UnDuo Autofill</title>
+<form>
+<p>This page lets your password manager autofill your 2FA code.</p>
+<label for="otp">2FA code</label>
+<input id="otp" name="otp" autocomplete="one-time-code" inputmode="numeric" autofocus>
+</form>
+<div id="result" hidden>
+<p>Your code is <strong id="code"></strong></p>
+<button id="copy">Copy</button>
+</div>
+<script>
+const form = document.querySelector("form");
+const field = document.getElementById("otp");
+const result = document.getElementById("result");
+const code = document.getElementById("code");
+const copy = document.getElementById("copy");
+
+// autofill.unduo.me/<code> shows only the code. Any other address shows the form.
+function render() {
+  const shown = location.pathname.slice(1);
+  const valid = /^\d{6,8}$/.test(shown);
+  form.hidden = valid;
+  result.hidden = !valid;
+  code.textContent = valid ? shown : "";
+  document.title = valid ? `Your code is ${shown}` : "UnDuo Autofill";
+  copy.textContent = "Copy";
+}
+
+// A whole code moves into the address without loading anything.
+function open() {
+  const value = field.value.replace(/\s/g, "");
+  if (!/^\d{6,8}$/.test(value)) return;
+  field.value = "";
+  history.pushState(null, "", `/${value}`);
+  render();
+}
+
+// Autofill inserts the whole code at once; typing waits for Enter.
+field.addEventListener("input", (event) => {
+  if (event.inputType !== "insertText" || event.data?.length > 1) open();
+});
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  open();
+});
+copy.addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(code.textContent);
+    copy.textContent = "Copied";
+  } catch {
+    getSelection().selectAllChildren(code);
+    copy.textContent = "Press ⌘C or Ctrl+C";
+  }
+});
+addEventListener("popstate", render);
+render();
+</script>
