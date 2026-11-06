@@ -3,8 +3,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-rlklKJDmOlZ5SwXBeSWRJm4CKv+JLFKjsKc3QhYzQLA='; form-action 'none'; base-uri 'none'">
-<title>UnDuo Autofill</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ERl/KWYHPKtC6pgqFnARsLv2BRw6431c5ARQCY2yAsQ='; form-action 'none'; base-uri 'none'">
+<title>2FA Autofill</title>
 <form>
 <p>This page lets your password manager autofill your 2FA code.</p>
 <label for="otp">2FA code</label>
@@ -28,7 +28,7 @@ function render() {
   form.hidden = valid;
   result.hidden = !valid;
   code.textContent = valid ? shown : "";
-  document.title = valid ? `Your code is ${shown}` : "UnDuo Autofill";
+  document.title = valid ? `Your code is ${shown}` : "2FA Autofill";
   copy.textContent = "Copy";
 }
 
