@@ -3,7 +3,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ERl/KWYHPKtC6pgqFnARsLv2BRw6431c5ARQCY2yAsQ='; form-action 'none'; base-uri 'none'">
+<meta name="description" content="A password manager fills your 2FA code into this page, and the page shows the code so you or an AI agent can type it where autofill fails. The page has one inline script and makes no network requests.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-LcxYk3JWDMh5urxxfpVbYvgbwQCDbReKob2/iYFvGE0='; form-action 'none'; base-uri 'none'" data-comment="default-src 'none' blocks every request the page could make for a resource or connection: fetch, XHR, WebSocket, images, styles, fonts, frames and workers. script-src allows only the inline script below, by its SHA-256. form-action 'none' blocks the form from being sent anywhere.">
 <title>2FA Autofill</title>
 <form>
 <p>This page lets your password manager autofill your 2FA code.</p>
@@ -14,17 +15,18 @@
 <p>Your code is <strong id="code"></strong></p>
 <button id="copy">Copy</button>
 </div>
-<script>
+<script data-source="https://github.com/UnDuoMe/autofill.help/blob/main/index.html" data-comment="This script is the page's only code, and data-source is this file in its public repository. GitHub Pages serves that file unchanged, and 404.html is a byte-for-byte copy of it. The script calls no network API and never loads another page. history.pushState changes the address without sending a request. Opening or reloading the address with a code in it requests that path from GitHub Pages.">
 const form = document.querySelector("form");
 const field = document.getElementById("otp");
 const result = document.getElementById("result");
 const code = document.getElementById("code");
 const copy = document.getElementById("copy");
 
-// autofill.unduo.me/<code> shows only the code. Any other address shows the form.
+// 2fa.autofill.help/<code> shows only the code. Any other address shows the form.
 function render() {
   const shown = location.pathname.slice(1);
   const valid = /^\d{6,8}$/.test(shown);
+  if (!valid && !form.isConnected) result.before(form);
   form.hidden = valid;
   result.hidden = !valid;
   code.textContent = valid ? shown : "";
@@ -45,9 +47,12 @@ function open() {
 field.addEventListener("input", (event) => {
   if (event.inputType !== "insertText" || event.data?.length > 1) open();
 });
+// 1Password's agent fill (in KERNEL browsers) submits the form after filling.
+// It reports the fill as done only once the form leaves the page.
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   open();
+  if (!result.hidden) form.remove();
 });
 copy.addEventListener("click", async () => {
   try {
